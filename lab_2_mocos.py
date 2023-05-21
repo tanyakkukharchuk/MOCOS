@@ -11,27 +11,29 @@ def fourier_coefficient(x, k):
     Ak = np.sum(x * np.cos(np.pi*k*np.arange(N)/N))
     Bk = np.sum(x * np.sin(np.pi*k*np.arange(N)/N))
     Ck = Ak - 1j*Bk
-    num_ops = 4 * N  # кількість операцій
-    return Ck, num_ops
+    num_ops = 8*N +2 # кількість операцій
+    num_ops2 = 2*N
+    return Ck, num_ops, num_ops2
 
 def discrete_fourier_transform(x):
     N = len(x)
     C = np.zeros(N, dtype=np.complex128)
-    total_ops = 0  # лічильник загальної кількості операцій
+    mult = 0
+    sum = 0
     for k in range(N):
-        C[k], num_ops = fourier_coefficient(x, k)
-        total_ops += num_ops
-    print(f"Total number of operations: {total_ops}")
-    return C
+        C[k], num_ops, num_ops2 = fourier_coefficient(x, k)
+        mult +=num_ops
+        sum += num_ops2
+    return mult, sum ,C
 
 # генеруємо масив випадкових даних
-x = np.random.rand(24)
+x = np.random.rand(200)
 
 # замір часу на початку
 start_time = time.time()
 
 # обчислюємо ДПФ
-C = discrete_fourier_transform(x)
+mult, sum, C = discrete_fourier_transform(x)
 
 # обчислення спектру амплітуд
 amplitude_spectrum = abs(C)
@@ -63,4 +65,6 @@ for k in range(len(C)):
 
 # вивід часу виконання
 end_time = time.time()
-print(f"Execution time: {end_time - start_time:.5f} seconds")
+print(f"Кількість операцій(+): {sum}")
+print(f"Кількість операцій(*): {mult}")
+print(f"Час обчислення: {end_time - start_time:.5f}")
